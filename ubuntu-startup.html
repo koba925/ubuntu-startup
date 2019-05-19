@@ -1,0 +1,246 @@
+<h1 id="ubuntuをmacbook-airに入れてみる">UbuntuをMacbook Airに入れてみる</h1>
+<p>ちょっと待てよ<br />
+最近、MacBookAirあんまり触ってないな<br />
+もしかしてなくなっても困らない？</p>
+<p>・・・Ubuntu入れてみようか（ごくり</p>
+<p>4GB/128GBの最弱MBAでも、まるごとUbuntuにするなら十分な容量のはず<br />
+欲張らなければ仮想マシンもそこそこ使えたりして？<br />
+仮想マシンがちょっと重かったとしてもDockerならいけるだろうし<br />
+いざとなればTimeMachineで元に戻るはずだしきっとたぶん</p>
+<p>参考文献を入手</p>
+<p>Ubuntuスタートアップバイブル</p>
+<p>この本では、Ubuntu日本語Remixというのを使う<br />
+<a href="http://www.ubuntulinux.jp/japanese">Ubuntuの日本語環境 | Ubuntu Japanese Team</a></p>
+<p>素の状態からやらないとトラブルの時に困ったりすることがあるけど<br />
+これはきっといい感じにしてくれてると信じて素直にこれを使おう<br />
+日本語関連で手間取るのはもったいないし</p>
+<p>まずはライブUSBを作って起動させる<br />
+この本は（ほぼ当然ながら）PC前提だけどMacではどこまで同じでいけるんだろう</p>
+<p>Ubuntu日本語Remixのisoをダウンロード<br />
+めっちゃ時間かかるので他の準備を進めたり本を読んだりMBAの事例を調べたり<br />
+デュアルブートにしてる例が多いな<br />
+ちょこちょこ何かあるみたいな感じもあるけどすんなり入ってることもあるみたい</p>
+<p><a href="https://rufus.ie/">Rufus</a>をダウンロードして実行<br />
+ダウンロードしたisoを指定して書き込み<br />
+そんなややこしい設定はなくてすんなり完了</p>
+<p>MBAに挿してOption押しながら再起動してEFI Bootを選択<br />
+Try … とか読んでる間にライブセッションが起動してしまった<br />
+普通に動いてる<br />
+Wi-Fiの設定したらネットにもつながるのかな</p>
+<blockquote>
+<p>Wi-Fiアダプターが見つかりません</p>
+</blockquote>
+<p>むむ<br />
+これ、実際にインストールするときには見つけてくれるんだろうか<br />
+突き進む</p>
+<p>ライブセッションのデスクトップにもUbuntuをインストールするっていう<br />
+アイコンがあるのでここから実行<br />
+キーボードの選択 日本語-日本語(Macintosh)</p>
+<p>なお出来心で「キーボードレイアウトを検出」したらヘブライ語になりました<br />
+すみません</p>
+<p>アプリケーションは通常（最小にしてみたい気もしたけど）<br />
+アップデートのダウンロードはチェックされててグレーで触れない<br />
+グラフィックスと～サードパーティ製ソフトウェア、はインストール</p>
+<p>ディスクを削除してUbuntuをインストール<br />
+お願い（祈</p>
+<blockquote>
+<p>GRUBのインストールに失敗しました</p>
+</blockquote>
+<p>そうですか</p>
+<blockquote>
+<p>‘grub-efi-amd64-signed’ パッケージを /target/ にインストールするのに失敗しました。GRUBブートローダなしでは、インストールしたシステムは起動しません。</p>
+</blockquote>
+<p>OKじゃないけどOKな</p>
+<blockquote>
+<p>インストーラーがクラッシュしました<br />
+インストーラーがクラッシュしました<br />
+申し訳ありません、インストーラーがクラッシュしました。このウィンドウを閉じた後で、バグ報告ツールを使って・・・</p>
+</blockquote>
+<blockquote>
+<p>問題を報告することができません。</p>
+</blockquote>
+<p>ネットにつながってないもんな</p>
+<p>再起動してライブセッションに入らずにやってみよう<br />
+起動画面からMacOSがいなくなってる</p>
+<p>そういえばここでWi-Fi選んでおけるんだな<br />
+ここで選んでおくとライブセッションでWi-Fi使えたりする？<br />
+関係ない気もするけど ネットワークブート用とかだろうな<br />
+でもちょっとやってみよ<br />
+はいだめでした</p>
+<p>気を取り直してEFI Bootして「Install Ubuntu」<br />
+ほとんど同じ<br />
+Ubuntu 18.04を消しますか、同居しますか、って聞かれたくらい<br />
+消さずにそのまま使ってくれてもいいのよ（たぶん</p>
+<p>・・・<br />
+同じだ</p>
+<p>調べるといくつか出てくる</p>
+<ul>
+<li>rEFIt(rEFInd)を使う</li>
+</ul>
+<p>これをつかっておけばよかったらしいが、Mac OSで動かすものらしい<br />
+手遅れ</p>
+<ul>
+<li>FAT32のパーティションを作る</li>
+</ul>
+<p>作ってなかったっけ？ESPとかいう名前で<br />
+partedで見てみた</p>
+<pre class="console"><code>1 1049kb 538MB 537MB fat32 EFI System Parition  boot, esp
+2 538MB  121GB 121GB ext</code></pre>
+<p>ほら</p>
+<ul>
+<li>ネットにつながないでインストールする</li>
+</ul>
+<p>つながってたの？</p>
+<ul>
+<li>がんばる</li>
+</ul>
+<p><a href="https://heeris.id.au/2014/ubuntu-plus-mac-pure-efi-boot/#fixing-efi">Ubuntu + Mac: Pure EFI Boot - The Slightly Disgruntled Scientist</a>を見てがんばる</p>
+<p>細かいところの意味はわかってないけど要するにEFIパーティションをFAT32からHFS+に変えてgrubをインストールしなおすということらしい</p>
+<p>なおうるさい起動音を止められるのはMac OSからしかできないから<br />
+先に止めておけって書いてあるけど手遅れ</p>
+<p>さてやってみよう</p>
+<p>メニューが出たところでcを押してgrubのシェルに入る<br />
+lsでhomeの場所を確認 → ls (hd2,gpt2)/home<br />
+lsで/boot/grubの場所を確認 → ls (hd2,gpt2)/boot/grub<br />
+rootを設定 → set root=(hd2,gpt2)<br />
+UUIDを表示 → ls -l (hd2,gpt2)<br />
+linux /boot/vmlinuz<Tabキー> .efi.signed root=UUID=<上のUUID><br />
+initrd /boot/initrd<Tabキー><br />
+boot</p>
+<p>おーブートした<br />
+ログイン<br />
+不完全な言語サポートって言ってるけど今は無視</p>
+<p>とはいうもののここからaptを使うのでネットつながってないと<br />
+やっぱりWi-Fiアダプターがないって言われる<br />
+ハードウェア的にはあるからドライバがないのかな</p>
+<pre class="console"><code>$ lspci -nn -d 14e4:
+03:00.0 Network controller [0280]: Broadcom Inc. and subsidiaries BSM4360 801.11ac Wireless Network Adapter [14e4:43e0] (rev 03)</code></pre>
+<p>これは、有線でつなぐしかないか？<br />
+USBのアダプタでも買ってくるかなあ？</p>
+<p>それっぽいドライバがUSBメモリに入っているという情報を発見</p>
+<p>/media/takahiro/UBUNTU1804/pool/を見てみる<br />
+ほんとだ</p>
+<p>/main/d/dkms/dkms_2.3ubuntu9.2_all.deb<br />
+/restricted/b/bcmwl-kernel-source_6.30.223.271+bdcom-0ubuntu4_amd64.deb</p>
+<p>このへん</p>
+<p><code>sudo dpkg -i</code>してみると依存関係が不足しててインストールできない<br />
+だめかとおもったけど、探してみると依存関係のパッケージも入ってる<br />
+いっぱいあってわけわからなくなったけどとにかく依存関係を追いかけて必要なものを全部インストール<br />
+一発でできるコマンドとかありそうな気がするけどわからなかった</p>
+<p>あと、b43-fwcutterとfakerootってやつも使うって記事があった気がするんだけどこれも入ってたので入れておく</p>
+<p>結局全部入れることができた<br />
+どういうことだろう<br />
+ここまでしてくれたなら自動で入れてくれてもよさそうなものだけど<br />
+たぶん見落としてるだけで簡単にできるやり方があったにちがいない</p>
+<p>そして設定を見てみると・・・Wi-Fi見えてた！つながった！</p>
+<p>続き</p>
+<pre class="console"><code>$ sudo add-apt-repository ppa:detly/mactel-utils</code></pre>
+<p>Releaseファイルがなくて更新が無効、って出たけどいいのかな</p>
+<pre class="console"><code>$ sudo apt update
+$ sudo apt install mactel-boot hfsprogs gdisk grub-efi-amd64</code></pre>
+<p>mactel-bootが見つからないって<br />
+うーんやっぱりだめかな</p>
+<p>ソースらしき <a href="https://launchpad.net/~detly/+archive/ubuntu/mactel-utils">Intel Mac Utilities : Jason Heeris</a> 見てみたら<br />
+bionicないじゃん<br />
+それじゃダメなのでは</p>
+<p>apt-repositoryの情報は/etc/apt/sources.list.d/の下に保存されているらしい<br />
+detly-ubuntu-mactel-utils-bionic.listっていうファイルがあった<br />
+bionicと書いてあるところをxenialに書き換えたらupdateできた</p>
+<p>・・・あとは祈るしかないな</p>
+<p>apt installも成功</p>
+<p>続きは書いてある通りでいけたんだけれども<br />
+全部終わって再起動したらgrubのシェルで止まってしまった<br />
+何かが足りない</p>
+<p>もう一度、さっきやった手順でなんとかUbuntuにログインした後、<br />
+<code>update-grub</code>したら直った模様（若干自信なし）</p>
+<pre class="console"><code># update-grub
+Sourcing file `/etc/default/grub&#39;
+Generating grub configuration file ...
+Linux イメージを見つけました: /boot/vmlinuz-4.18.0-17-generic
+Found initrd image: /boot/initrd.img-4.18.0-17-generic
+Found Mac OS X on /dev/sda1</code></pre>
+<p>さて</p>
+<blockquote>
+<p>不完全な言語サポートって言ってるけど今は無視</p>
+</blockquote>
+<p>インストール中にネットにつながってなかったせいだろう<br />
+<code>sudo apt update</code>と<code>sudo apt upgrade</code>をすませば<br />
+解消するのでは</p>
+<p>途中でナショナル配置とラテン配置の切り替えどうする？って聞かれた<br />
+日本語入力の切り替えのことかな？<br />
+Capslockにしてみたけど何も変わってない気がする<br />
+そのあたりは明日やろう</p>
+<h2 id="ubuntuをmacbook-airに入れてみる-2">UbuntuをMacbook Airに入れてみる (2)</h2>
+<p>気になる点はいくつか</p>
+<p>Dockの最上部に“RELEASEのインストール”というアイコンがある<br />
+検索してみると、Ubuntuのインストールの残骸らしい<br />
+実行したら起動しなくなったという報告もあった<br />
+（自分は実行してしまったけどなんともなかった・・・ように見える）<br />
+Dockのアイコンは消してしまってよいらしい<br />
+実態はubiquityというパッケージらしいのでこれも消す</p>
+<p>日本語入力がいい感じに設定できてない<br />
+入力ソースの選択が「日本語」「日本語(Mozc)」「日本語(Macintosh)」と<br />
+なにか重複感<br />
+インストールの時「日本語(Macintosh)」を選んだけど「日本語」のほうが<br />
+よかったのかな？わからない</p>
+<p>Vagrantでデスクトップ環境を立ち上げたときとはちょっと違う感じ<br />
+Macだからなのか日本語Remixだからなのか<br />
+なによりまず日本語入力にするとカナ入力なのが困る<br />
+プロパティを見るとローマ字入力設定なのに<br />
+「日本語(Macintosh)」ってやつが悪さをしているっぽい、というか<br />
+「日本語(Macintosh)」はカナ入力キーボードってことなのかもしれない<br />
+よくわからない</p>
+<p>ここから下は試行錯誤した後で書いてるので、順序が前後してるところが<br />
+あると思う</p>
+<p>「日本語（Macintosh）」は「設定」「地域と言語」から消した</p>
+<p>さてキーボード<br />
+Vagrantのときを思い出して<br />
+sudo dpkg-reconfigure keyboard-configuration を実行</p>
+<p>Apple<br />
+Apple Aluminum(ANSI)<br />
+Apple Aluminum(ISO)<br />
+Apple Aluminum(JIS)<br />
+Apple laptop</p>
+<p>とある<br />
+laptopよりもJISだろうな</p>
+<p>次は<br />
+日本語 - 日本語（Macintosh）<br />
+かなあ<br />
+日本語（Mozc）ってのはない</p>
+<p>ナショナル／ラテンの切り替えはなしでいいか<br />
+一時切り替えもなし</p>
+<p>AltGrは「キーボード設定のデフォルト」にしておく<br />
+どのキーなのかはわからない</p>
+<p>コンポーズキーもなし</p>
+<p>Xサーバを強制終了するのにControl+Alt+Backspaceは使わない</p>
+<p>いっぱい選択あったな<br />
+そしてリブート</p>
+<p>うん<br />
+英数でローマ字入力、かなで直接入力になったよ！<br />
+って反対やん！<br />
+いやちがうか<br />
+英数でローマ字入力だけど、かなはトグルだ<br />
+まあとにかく設定設定</p>
+<p>入力ソースのメニューで「ツール」「プロパティ」<br />
+「キー設定の選択」を「編集」<br />
+「入力キー」のところで2回ダブルクリックすると、「割り当てるキーの入力」と<br />
+いうのが出てきて、ここでキーを押すとそのキーが割り当てられる模様<br />
+で「かな」キーを押すと「Eisu」、「英数」キーを押すと「Hiragana」になると<br />
+いうことが判明<br />
+キーボードレイアウトの表示で見てみても、「かな」を押すと「英数」の位置が、<br />
+「英数」をおすと「かな」の位置が光るので、どこかで反対にされてしまってるようだ</p>
+<p>わかってれば問題ない<br />
+「IMEを有効化」になっているところを「Eisu」にしたり<br />
+「IMEを無効化」になっているところを「Hiragana」にしたり<br />
+「Eisu」「Hiragana」に別の機能が割り当てられてる行を削除したり</p>
+<p>とりあえずこれで普通に日本語が入力できるようになってように見える</p>
+<p>ついでにほかのキーも試してみる<br />
+caps → 「Eisu」<br />
+Shift → 「Shift」<br />
+Ctrl → 「Ctrl」<br />
+Tab → 「Tab」<br />
+Esc → 「Escape」<br />
+Enter → 「Enter」<br />
+delete → 「Backspace」</p>
+<p>caps以外は普通だな<br />
+capsはもしかしてナショナル／ラテンの切り替えで一度設定した名残？</p>
