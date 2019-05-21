@@ -603,3 +603,79 @@ $ code
 立ち上がった！
 
 ここまで
+
+## [mac][linux][dev]UbuntuをMacbook Airに入れてみる (4)
+
+そうそう
+snapdの起動時に出てたエラーはどうなっただろう
+
+```console
+ 5月 20 22:58:35 lorraine systemd[1]: Starting Snappy daemon...
+ 5月 20 22:58:35 lorraine snapd[832]: AppArmor status: apparmor is enabled and all features are available
+ 5月 20 22:58:36 lorraine snapd[832]: AppArmor status: apparmor is enabled and all features are available
+ 5月 20 22:58:36 lorraine snapd[832]: daemon.go:379: started snapd/2.38.1 (series 16; classic) ubuntu/18.04 (amd64) linux/4.18.0-20-generic.
+ 5月 20 22:58:36 lorraine systemd[1]: Started Snappy daemon.
+```
+
+なんの問題もない
+
+ところでホームディレクトリをみてふたつ悲しくなった
+
+```console
+takahiro@lorraine:~$ ls
+examples.desktop  snap  ダウンロード  テンプレート  デスクトップ  ドキュメント  ビデオ  ピクチャ  ミュージック  公開
+```
+
+* snapが堂々とフォルダを作ってる
+* フォルダ名が日本語
+
+snapはそういうものらしい
+mjsk
+
+フォルダ名は英語にする方法があった
+
+```console
+$ LANG=C xdg-user-dirs-update --force
+```
+
+して再起動
+「標準フォルダーの名前を現在の言語に合わせて更新しますか？」と聞かれるけど無視
+日本語のフォルダを削除
+
+さてじゃあUbuntuでもブログ書けるようにしようか
+
+まずファイルをどうしよう
+ファイルはdropboxでごっそり共有しようかGitHub経由で同期するにとどめようか
+あんまりごっそり持ってきてもしかたない気がするからGitHub経由でやってみるか
+持ってきた
+
+既存の.mdを開いて追記
+一番下に
+一番下に・・・
+Endキーがねえ！
+MacならCmd+↓だけどそれはウィンドウの操作になってる
+確認したところやっぱりcursorBottomにはCtrl+Endが割り当てられている
+割当を変更する？
+
+そうかーこういうとこにも落とし穴があるのか
+LinuxってのはPCで使うものですよと？
+emacsかvi使えってことかね
+vscodeでついにもうそのへん使わなくてよくなるなーと思ってたんだけど
+
+vscodeにキーマップでも入れる？
+キーアサインを大々的に変えると、拡張機能のショートカットキーと
+盛大に衝突しそうな気がして不安なんですけど
+ツールはできるだけカスタマイズしないで使う、っていうのが
+自分のなかでは流行しているのです
+
+うーん、どっちもちょっとずつは使えるんだけど・・・
+もうちょっとがんばろう
+
+Markdown > Preview: Breaksのチェックを入れて
+pandoc入れて
+vscode-pandoc入れて
+Pndoc: HTML Opt Stringに`-f markdown+hard_line_breaks --no-highlight`入れて
+Ctrl+K P H Enter
+
+できた
+

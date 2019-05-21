@@ -24,7 +24,7 @@
 ダウンロードしたisoを指定して書き込み<br />
 そんなややこしい設定はなくてすんなり完了</p>
 <p>MBAに挿してOption押しながら再起動してEFI Bootを選択<br />
-Try … とか読んでる間にライブセッションが起動してしまった<br />
+Try ... とか読んでる間にライブセッションが起動してしまった<br />
 普通に動いてる<br />
 Wi-Fiの設定したらネットにもつながるのかな</p>
 <blockquote>
@@ -48,7 +48,7 @@ Wi-Fiの設定したらネットにもつながるのかな</p>
 </blockquote>
 <p>そうですか</p>
 <blockquote>
-<p>‘grub-efi-amd64-signed’ パッケージを /target/ にインストールするのに失敗しました。GRUBブートローダなしでは、インストールしたシステムは起動しません。</p>
+<p>'grub-efi-amd64-signed' パッケージを /target/ にインストールするのに失敗しました。GRUBブートローダなしでは、インストールしたシステムは起動しません。</p>
 </blockquote>
 <p>OKじゃないけどOKな</p>
 <blockquote>
@@ -172,7 +172,7 @@ Capslockにしてみたけど何も変わってない気がする<br />
 そのあたりは明日やろう</p>
 <h2 id="ubuntuをmacbook-airに入れてみる-2">UbuntuをMacbook Airに入れてみる (2)</h2>
 <p>気になる点はいくつか</p>
-<p>Dockの最上部に“RELEASEのインストール”というアイコンがある<br />
+<p>Dockの最上部に&quot;RELEASEのインストール&quot;というアイコンがある<br />
 検索してみると、Ubuntuのインストールの残骸らしい<br />
 実行したら起動しなくなったという報告もあった<br />
 （自分は実行してしまったけどなんともなかった・・・ように見える）<br />
@@ -433,3 +433,54 @@ $ code</code></pre>
 無事立ち上がりますように・・・<br />
 立ち上がった！</p>
 <p>ここまで</p>
+<h2 id="ubuntuをmacbook-airに入れてみる-3-1">UbuntuをMacbook Airに入れてみる (3)</h2>
+<p>そうそう<br />
+snapdの起動時に出てたエラーはどうなっただろう</p>
+<pre class="console"><code> 5月 20 22:58:35 lorraine systemd[1]: Starting Snappy daemon...
+ 5月 20 22:58:35 lorraine snapd[832]: AppArmor status: apparmor is enabled and all features are available
+ 5月 20 22:58:36 lorraine snapd[832]: AppArmor status: apparmor is enabled and all features are available
+ 5月 20 22:58:36 lorraine snapd[832]: daemon.go:379: started snapd/2.38.1 (series 16; classic) ubuntu/18.04 (amd64) linux/4.18.0-20-generic.
+ 5月 20 22:58:36 lorraine systemd[1]: Started Snappy daemon.</code></pre>
+<p>なんの問題もない</p>
+<p>ところでホームディレクトリをみてふたつ悲しくなった</p>
+<pre class="console"><code>takahiro@lorraine:~$ ls
+examples.desktop  snap  ダウンロード  テンプレート  デスクトップ  ドキュメント  ビデオ  ピクチャ  ミュージック  公開</code></pre>
+<ul>
+<li>snapが堂々とフォルダを作ってる</li>
+<li>フォルダ名が日本語</li>
+</ul>
+<p>snapはそういうものらしい<br />
+mjsk</p>
+<p>フォルダ名は英語にする方法があった</p>
+<pre class="console"><code>$ LANG=C xdg-user-dirs-update --force</code></pre>
+<p>して再起動<br />
+「標準フォルダーの名前を現在の言語に合わせて更新しますか？」と聞かれるけど無視<br />
+日本語のフォルダを削除</p>
+<p>さてじゃあUbuntuでもブログ書けるようにしようか</p>
+<p>まずファイルをどうしよう<br />
+ファイルはdropboxでごっそり共有しようかGitHub経由で同期するにとどめようか<br />
+あんまりごっそり持ってきてもしかたない気がするからGitHub経由でやってみるか<br />
+持ってきた</p>
+<p>既存の.mdを開いて追記<br />
+一番下に<br />
+一番下に・・・<br />
+Endキーがねえ！<br />
+MacならCmd+↓だけどそれはウィンドウの操作になってる<br />
+確認したところやっぱりcursorBottomにはCtrl+Endが割り当てられている<br />
+割当を変更する？</p>
+<p>そうかーこういうとこにも落とし穴があるのか<br />
+LinuxってのはPCで使うものですよと？<br />
+emacsかvi使えってことかね<br />
+vscodeでついにもうそのへん使わなくてよくなるなーと思ってたんだけど</p>
+<p>vscodeにキーマップでも入れる？<br />
+キーアサインを大々的に変えると、拡張機能のショートカットキーと<br />
+盛大に衝突しそうな気がして不安なんですけど<br />
+ツールはできるだけカスタマイズしないで使う、っていうのが<br />
+自分のなかでは流行しているのです</p>
+<p>うーん、どっちもちょっとずつは使えるんだけど・・・<br />
+もうちょっとがんばろう</p>
+<p>Markdown &gt; Preview: Breaksのチェックを入れて<br />
+pandoc入れて<br />
+vscode-pandoc入れて<br />
+Pndoc: HTML Opt Stringに<code>-f markdown+hard_line_breaks --no-highlight</code>入れて<br />
+Ctrl+K P H Enter</p>
