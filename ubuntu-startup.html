@@ -244,3 +244,192 @@ Enter → 「Enter」<br />
 delete → 「Backspace」</p>
 <p>caps以外は普通だな<br />
 capsはもしかしてナショナル／ラテンの切り替えで一度設定した名残？</p>
+<h2 id="ubuntuをmacbook-airに入れてみる-3">UbuntuをMacbook Airに入れてみる (3)</h2>
+<p>じゃvscodeでも入れようか</p>
+<pre class="console"><code>$ snap find vscode
+Name               Version   Publisher  Notes    Summary
+ampareinvertcolor  1.0.0     juthawong  -        Simply Invert CSS Color - Made For Web Designer
+code               a622c65b  vscode✓    classic  Code editing. Redefined.
+code-insiders      6ac87465  vscode✓    classic  Code editing. Redefined.
+$ snap install code
+error: too early for operation, device not yet seeded or device model not acknowledged</code></pre>
+<p>なんかエラー出た<br />
+デバイスはまだシードされていません？<br />
+なんだろう<br />
+何か最初にしなきゃいけないことができてないっぽいな</p>
+<p>upgradeしたら何か変わらないかな</p>
+<pre class="console"><code>$ sudo apt upgrade snapd
+snapd はすでに最新バージョン (2.38+18.04) です。
+$ snap install code
+error: too early for operation, device not yet seeded or device model not acknowledged</code></pre>
+<p>変わりません</p>
+<p>アンインストールしてインストールしたら普通に動くようになるかなあ<br />
+でもsnapをアンインストールしたとたんsnapでインストールしたソフトが<br />
+消えちゃったりとか、そこまでいかなくても管理不能になったりしないだろうか<br />
+今何入ってるの</p>
+<pre class="console"><code>$ snap list
+Name               Version          Rev   Tracking  Publisher   Notes
+core               16-2.38          6673  stable    canonical✓  core
+gnome-3-26-1604    3.26.0.20190228  82    stable/…  canonical✓  -
+gtk-common-themes  0.1-16-g2287c87  1198  stable/…  canonical✓  -</code></pre>
+<p>消えたりするとダメージあるな<br />
+むう</p>
+<p>検索してみるといくつか引っかかるけど、あんまりすんなり解決していないようにも見える<br />
+調べてみろと書いてあったことを試していく</p>
+<p>デバイスとかシードの情報はstate.jsonというファイルに書いてあるようだ</p>
+<pre class="console"><code>takahiro@lorraine:/var/lib/snapd/seed$ sudo cat /var/lib/snapd/state.json | jq &#39;.data.auth.device[&quot;brand&quot;,&quot;model&quot;],.data.seeded,.data[&quot;seed-time&quot;],.data.auth.device.serial&#39;
+&quot;generic&quot;
+&quot;generic-classic&quot;
+null
+null
+&quot;8994a8e7-3d6b-4d2a-96c1-6191f45aaa2e&quot;</code></pre>
+<p>確かにシードされていないようだな<br />
+でもどうやったらシードされるかはうまく検索できなかった</p>
+<pre class="console"><code>$ snap changes
+ID   Status  Spawn                     Ready  Summary
+1    Doing   2 days ago, at 19:35 JST  -      Initialize system state</code></pre>
+<p>DoneじゃなくてDoingなのが気になる<br />
+まだInitialize中で終わってない、とも読める</p>
+<p>ジャーナルを見る</p>
+<pre class="console"><code>$ journalctl -u snapd --full --no-pager
+-- Logs begin at Sat 2019-05-18 19:35:29 JST, end at Mon 2019-05-20 21:24:08 JST. --
+ 5月 18 19:35:33 lorraine systemd[1]: Starting Snappy daemon...
+ 5月 18 19:35:34 lorraine snapd[752]: AppArmor status: apparmor is enabled and all features are available
+ 5月 18 19:35:34 lorraine snapd[752]: helpers.go:145: error trying to compare the snap system key: system-key missing on disk
+ 5月 18 19:35:34 lorraine snapd[752]: daemon.go:379: started snapd/2.38+18.04 (series 16; classic) ubuntu/18.04 (amd64) linux/4.18.0-17-generic.
+ 5月 18 19:35:34 lorraine systemd[1]: Started Snappy daemon.
+ 5月 18 19:35:34 lorraine snapd[752]: stateengine.go:102: state ensure error: Get https://api.snapcraft.io/api/v1/snaps/sections: dial tcp: lookup api.snapcraft.io: no such host
+ 5月 18 19:36:27 lorraine snapd[752]: daemon.go:611: gracefully waiting for running hooks
+ 5月 18 19:36:27 lorraine snapd[752]: daemon.go:613: done waiting for running hooks
+ 5月 18 19:36:27 lorraine systemd[1]: snapd.service: Service hold-off time over, scheduling restart.
+ 5月 18 19:36:27 lorraine systemd[1]: snapd.service: Scheduled restart job, restart counter is at 1.
+ 5月 18 19:36:27 lorraine systemd[1]: Stopped Snappy daemon.
+ 5月 18 19:36:27 lorraine systemd[1]: Starting Snappy daemon...
+ 5月 18 19:36:28 lorraine snapd[1974]: AppArmor status: apparmor is enabled and all features are available
+ 5月 18 19:36:28 lorraine snapd[1974]: daemon.go:379: started snapd/2.38+18.04 (series 16; classic) ubuntu/18.04 (amd64) linux/4.18.0-17-generic.
+ 5月 18 19:36:28 lorraine systemd[1]: Started Snappy daemon.
+ 5月 18 19:36:28 lorraine snapd[1974]: stateengine.go:102: state ensure error: Get https://api.snapcraft.io/api/v1/snaps/sections: dial tcp: lookup api.snapcraft.io: no such host
+ 5月 18 21:55:43 lorraine snapd[1974]: main.go:147: Exiting on terminated signal.
+ 5月 18 21:55:43 lorraine systemd[1]: Stopping Snappy daemon...
+ 5月 18 21:55:43 lorraine systemd[1]: Stopped Snappy daemon.
+-- Reboot --
+
+:
+
+-- Reboot --
+ 5月 19 22:01:41 lorraine systemd[1]: Starting Snappy daemon...
+ 5月 19 22:01:41 lorraine snapd[791]: AppArmor status: apparmor is enabled and all features are available
+ 5月 19 22:01:41 lorraine snapd[791]: helpers.go:717: cannot retrieve info for snap &quot;gnome-calculator&quot;: cannot find installed snap &quot;gnome-calculator&quot; at revision 406: missing file /snap/gnome-calculator/406/meta/snap.yaml
+ 5月 19 22:01:41 lorraine snapd[791]: daemon.go:379: started snapd/2.38+18.04 (series 16; classic) ubuntu/18.04 (amd64) linux/4.18.0-20-generic.
+ 5月 19 22:01:42 lorraine systemd[1]: Started Snappy daemon.
+ 5月 19 22:01:42 lorraine snapd[791]: stateengine.go:102: state ensure error: Get https://api.snapcraft.io/api/v1/snaps/sections: dial tcp: lookup api.snapcraft.io: no such host
+ 5月 20 05:44:17 lorraine snapd[791]: api.go:1071: Installing snap &quot;code&quot; revision unset</code></pre>
+<p>api.snapcraft.ioにアクセスできてない？</p>
+<pre class="console"><code>$ wget https://api.snapcraft.io/api/v1/snaps/sections
+--2019-05-20 21:29:17--  https://api.snapcraft.io/api/v1/snaps/sections
+api.snapcraft.io (api.snapcraft.io) をDNSに問いあわせています... 91.189.92.41, 91.189.92.19, 91.189.92.20, ...
+api.snapcraft.io (api.snapcraft.io)|91.189.92.41|:443 に接続しています... 接続しました。
+HTTP による接続要求を送信しました、応答を待っています... 200 OK
+2019-05-20 21:29:18 (30.3 MB/s) - `sections&#39; へ保存完了 [558/558]
+
+$ cat sections
+{&quot;_embedded&quot;: {&quot;clickindex:sections&quot;: [{&quot;name&quot;: &quot;featured&quot;}, {&quot;name&quot;: &quot;games&quot;}, {&quot;name&quot;: &quot;finance&quot;}, {&quot;name&quot;: &quot;productivity&quot;}, {&quot;name&quot;: &quot;utilities&quot;}, {&quot;name&quot;: &quot;news-and-weather&quot;}, {&quot;name&quot;: &quot;science&quot;}, {&quot;name&quot;: &quot;health-and-fitness&quot;}, {&quot;name&quot;: &quot;education&quot;}, {&quot;name&quot;: &quot;personalisation&quot;}, {&quot;name&quot;: &quot;devices-and-iot&quot;}, {&quot;name&quot;: &quot;books-and-reference&quot;}, {&quot;name&quot;: &quot;security&quot;}, {&quot;name&quot;: &quot;music-and-audio&quot;}, {&quot;name&quot;: &quot;social&quot;}, {&quot;name&quot;: &quot;server-and-cloud&quot;}, {&quot;name&quot;: &quot;development&quot;}, {&quot;name&quot;: &quot;entertainment&quot;}, {&quot;name&quot;: &quot;photo-and-video&quot;}, {&quot;name&quot;: &quot;art-and-design&quot;}]}}</code></pre>
+<p>できてはいるけど、もしかしたら起動直後でWi-Fiにつながってないタイミングってのはあるかもね？<br />
+サービスを再起動してみたらどうかな<br />
+まず現状を</p>
+<pre class="console"><code>$ systemctl | grep snapd
+snapd.autoimport.service      loaded inactive   dead      start Auto import assertions from block devices
+snapd.seeded.service          loaded activating start     start Wait until snapd is fully seeded
+snapd.service                 loaded active     running         Snappy daemon
+snapd.socket                  loaded active     running         Socket activation for snappy daemon</code></pre>
+<p>ここにもシードを待ってる人が<br />
+死んでる人も</p>
+<p>まずサービスを止める</p>
+<pre class="console"><code>takahiro@lorraine:/var/lib/snapd/seed$ systemctl stop snapd
+Warning: Stopping snapd.service, but it can still be activated by:
+  snapd.socket</code></pre>
+<p>順番が違ったみたい</p>
+<pre class="console"><code>takahiro@lorraine:/var/lib/snapd/seed$ systemctl stop snapd.socket
+takahiro@lorraine:/var/lib/snapd/seed$ systemctl stop snapd</code></pre>
+<p>どこまで消えたかな</p>
+<pre class="console"><code>takahiro@lorraine:/var/lib/snapd/seed$ systemctl | grep snapd
+● snapd.seeded.service        loaded failed failed    Wait until snapd is fully seeded</code></pre>
+<p>あなたは残ってましたか</p>
+<pre class="console"><code>takahiro@lorraine:/var/lib/snapd/seed$ systemctl stop snapd.seeded.service
+takahiro@lorraine:/var/lib/snapd/seed$ systemctl | grep snapd
+● snapd.seeded.service        loaded failed failed    Wait until snapd is fully seeded</code></pre>
+<p>消えない</p>
+<pre class="console"><code>takahiro@lorraine:/var/lib/snapd/seed$ systemctl kill snapd.seeded.service
+takahiro@lorraine:/var/lib/snapd/seed$ systemctl | grep snapd
+● snapd.seeded.service        loaded failed failed    Wait until snapd is fully seeded</code></pre>
+<p>消えない<br />
+むしろ起動してやるべきなのか</p>
+<pre class="console"><code>takahiro@lorraine:/var/lib/snapd/seed$ systemctl reload snapd.seeded.service
+Failed to reload snapd.seeded.service: Job type reload is not applicable for unit snapd.seeded.service.
+See system logs and &#39;systemctl status snapd.seeded.service&#39; for details.
+
+takahiro@lorraine:/var/lib/snapd/seed$ systemctl status snapd.seeded.service
+● snapd.seeded.service - Wait until snapd is fully seeded
+   Loaded: loaded (/lib/systemd/system/snapd.seeded.service; enabled; vendor preset: enabled)
+   Active: failed (Result: signal) since Mon 2019-05-20 22:13:09 JST; 12min ago
+  Process: 891 ExecStart=/usr/bin/snap wait system seed.loaded (code=killed, signal=TERM)
+ Main PID: 891 (code=killed, signal=TERM)
+
+ 5月 19 22:01:42 lorraine systemd[1]: Starting Wait until snapd is fully seeded...
+ 5月 20 22:13:09 lorraine systemd[1]: snapd.seeded.service: Main process exited, code=killed, status=15/TERM
+ 5月 20 22:13:09 lorraine systemd[1]: snapd.seeded.service: Failed with result &#39;signal&#39;.
+ 5月 20 22:13:09 lorraine systemd[1]: Stopped Wait until snapd is fully seeded.
+takahiro@lorraine:/var/lib/snapd/seed$ systemctl start snapd.seeded.service</code></pre>
+<p>帰ってこない</p>
+<pre class="console"><code>^Z
+[1]+  停止                  systemctl start snapd.seeded.service
+takahiro@lorraine:/var/lib/snapd/seed$ bg
+[1]+ systemctl start snapd.seeded.service &amp;
+
+takahiro@lorraine:/var/lib/snapd/seed$ systemctl status snapd.seeded.service
+● snapd.seeded.service - Wait until snapd is fully seeded
+   Loaded: loaded (/lib/systemd/system/snapd.seeded.service; enabled; vendor preset: enabled)
+   Active: activating (start) since Mon 2019-05-20 22:26:39 JST; 2min 50s ago
+ Main PID: 5488 (snap)
+    Tasks: 11 (limit: 4374)
+   CGroup: /system.slice/snapd.seeded.service
+           └─5488 /usr/bin/snap wait system seed.loaded
+
+ 5月 20 22:26:39 lorraine systemd[1]: Starting Wait until snapd is fully seeded...</code></pre>
+<p>あくまでもシードを待つ姿勢<br />
+こいつをどうすべきかわからないのでいったん再起動<br />
+やっぱり同じ</p>
+<p>ここはもう勢いあまってsnapdをアンインストールしてインストールか<br />
+仮に起動しなくなったとしてもUbuntuインストールしなおすだけだし<br />
+ここはremoveするのではなくpurgeするところだろうな</p>
+<pre class="console"><code>$ sudo apt purge snapd
+以下のパッケージは「削除」されます:
+  gnome-software-plugin-snap* snapd*
+続行しますか? [Y/n] y
+$ sudo apt install snapd
+以下のパッケージが新たにインストールされます:
+  snapd
+アップグレード: 0 個、新規インストール: 1 個、削除: 0 個、保留: 0 個。</code></pre>
+<pre class="console"><code>$ snap list
+No snaps are installed yet. Try &#39;snap install hello-world&#39;.</code></pre>
+<p>やっべなんにもなくなった<br />
+removeから試すべきだったか</p>
+<p>泥縄でインストール<br />
+これは、日本語Remixで入るのと同じものが入るんだろうか<br />
+少し心配</p>
+<pre class="console"><code>$ snap install core
+2019-05-20T22:44:45+09:00 INFO Waiting for restart...
+core 16-2.38.1 from Canonical✓ installed
+$ snap install gnome-3-26-1604
+gnome-3-26-1604 3.26.0.20190228 from Canonical✓ installed
+$ snap install gtk-common-themes
+gtk-common-themes 0.1-16-g2287c87 from Canonical✓ installed</code></pre>
+<p>そのままvscodeまでインストールしてしまおう</p>
+<pre class="console"><code>$ snap install code --classic
+code a622c65b from Visual Studio Code (vscode✓) installed
+$ code</code></pre>
+<p>起動した！</p>
+<p>では再起動<br />
+無事立ち上がりますように・・・<br />
+立ち上がった！</p>
+<p>ここまで</p>
