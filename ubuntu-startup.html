@@ -433,7 +433,7 @@ $ code</code></pre>
 無事立ち上がりますように・・・<br />
 立ち上がった！</p>
 <p>ここまで</p>
-<h2 id="ubuntuをmacbook-airに入れてみる-3-1">UbuntuをMacbook Airに入れてみる (3)</h2>
+<h2 id="maclinuxdevubuntuをmacbook-airに入れてみる-4">[mac][linux][dev]UbuntuをMacbook Airに入れてみる (4)</h2>
 <p>そうそう<br />
 snapdの起動時に出てたエラーはどうなっただろう</p>
 <pre class="console"><code> 5月 20 22:58:35 lorraine systemd[1]: Starting Snappy daemon...
@@ -484,3 +484,49 @@ pandoc入れて<br />
 vscode-pandoc入れて<br />
 Pndoc: HTML Opt Stringに<code>-f markdown+hard_line_breaks --no-highlight</code>入れて<br />
 Ctrl+K P H Enter</p>
+<p>できた</p>
+<h2 id="maclinuxdevubuntuをmacbook-airに入れてみる-5">[mac][linux][dev]UbuntuをMacbook Airに入れてみる (5)</h2>
+<p>今日はUbuntuスタートアップバイブルの読み中心<br />
+ざざっと読んでるだけだけどけっこう量がある<br />
+Kindle版だからボリューム感がわからないんだよな</p>
+<blockquote>
+<p>Snapのデスクトップアプリについては、日本語の表示や入力に問題が出ることも多く、18.04 LTSのリリース時点では必ずしも推奨できる状況にはありません。</p>
+</blockquote>
+<p>そうなんだ<br />
+vscodeは大丈夫みたいですよ<br />
+でもほかはしばらく自粛するかな</p>
+<blockquote>
+<p>Ubuntuの初期設定ではrootユーザーが「ロック」されておりログインできません。</p>
+</blockquote>
+<p>そうなの？<br />
+どうなってるんだろうと思ったら<br />
+電源プチとかしてfsck走ったらどうすんの？<br />
+rootパスワードいらなかったっけ？<br />
+（使ってたのが昔過ぎて覚えてない）</p>
+<p>もしかしていまどきのファイルシステムは丈夫で<br />
+fsckなんか走らない、とか？<br />
+（検索）<br />
+そうでもなさそうだ</p>
+<blockquote>
+<p>Ubuntuのシステム設定ファイルは、rootでなければ編集できないようになっています。こうしたファイルを管理者ユーザーが編集するには、「sudo -e」コマンドを用います。</p>
+</blockquote>
+<p>知らなかった<br />
+sudoeditでも同じだそうな<br />
+自分が（少しだけど）いじってたときはrootでログインするとか<br />
+su - でrootになってとかやってたのどかな時代でした</p>
+<blockquote>
+<p>UbuntuのリポジトリからVirtualBoxをインストールするには、次のコマンドで「virtualbox」パッケージをインストールするだけです。</p>
+<pre><code>$ sudo apt install virtualbox</code></pre>
+<p>Ubuntu 18.04 LTSの場合、バージョン「5.2.10」がインストールされます。</p>
+</blockquote>
+<p>最新は5.2.30(2019/5/13)<br />
+5.2.10は2018/4/17だ<br />
+けっこう古いな<br />
+6は用心して使わない、はポリシーとしてあるのかもしれないけど<br />
+5.2系でも最新じゃないのもポリシーなんだろうか<br />
+それとも単にゆっくりしているだけ？</p>
+<blockquote>
+<p>より新しいバージョンのdebパッケージは、VirtualBoxのWebサイトからダウンロードできます。</p>
+</blockquote>
+<p>どうしようかなあ<br />
+あとで考える</p>
