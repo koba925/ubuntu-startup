@@ -516,7 +516,7 @@ sudoeditでも同じだそうな<br />
 su - でrootになってとかやってたのどかな時代でした</p>
 <blockquote>
 <p>UbuntuのリポジトリからVirtualBoxをインストールするには、次のコマンドで「virtualbox」パッケージをインストールするだけです。</p>
-<pre><code>$ sudo apt install virtualbox</code></pre>
+<pre class="console"><code>$ sudo apt install virtualbox</code></pre>
 <p>Ubuntu 18.04 LTSの場合、バージョン「5.2.10」がインストールされます。</p>
 </blockquote>
 <p>最新は5.2.30(2019/5/13)<br />
@@ -530,3 +530,327 @@ su - でrootになってとかやってたのどかな時代でした</p>
 </blockquote>
 <p>どうしようかなあ<br />
 あとで考える</p>
+<h2 id="maclinuxdevubuntuをmacbook-airに入れてみる-6">[mac][linux][dev]UbuntuをMacbook Airに入れてみる (6)</h2>
+<p>今の設定だと、F1〜F12をそのまま押すと、輝度の調節だったり<br />
+音量の調節だったりになっている<br />
+ファンクションキーとして使うにはFnキーと同時押しする</p>
+<p>これを逆にしたい<br />
+狙いはHomeやEndを割り当てること<br />
+PageUpやPageDown、Delete(BackspaceじゃないDelete)も割り当ててもいいかな<br />
+ファンクションキーってそんなに使わなかったし</p>
+<p>で<br />
+やり方を検索<br />
+/etc/rc.localにこう書くといいらしい</p>
+<pre class="bash"><code>echo 2 &gt; /sys/module/hid_apple/parameters/fnmode</code></pre>
+<p>fnmode見てみたら、今は1と書いてある<br />
+これ、普通のファイルに見えるけど、sudo -e で2に書き換えちゃ<br />
+ダメなのかね<br />
+再起動したら戻っちゃうの？</p>
+<pre class="console"><code>$ file /sys/module/hid_apple/parameters/fnmode
+/sys/module/hid_apple/parameters/fnmode: ASCII text
+$ ll /sys/module/hid_apple/parameters/fnmode
+-rw-r--r-- 1 root root 4096  5月 23 22:12 /sys/module/hid_apple/parameters/fnmode</code></pre>
+<p>やってみるか</p>
+<pre class="console"><code>takahiro@lorraine:~/study/ubuntu-startup$ sudo -e /sys/module/hid_apple/parameters/fnmode
+takahiro@lorraine:~/study/ubuntu-startup$ cat /sys/module/hid_apple/parameters/fnmode
+2</code></pre>
+<p>これで再起動</p>
+<pre class="console"><code>$ cat /sys/module/hid_apple/parameters/fnmode
+1</code></pre>
+<p>戻ってやがる<br />
+なぜ戻る？<br />
+起動時にまずCMOSの状態を読み込んで更新するとか？<br />
+意味あるかなあそれ</p>
+<p>しかたないのでrc.localを作る<br />
+どうもこれは旧式なやり方っぽいけどまあいいことにする</p>
+<pre class="console"><code>$ sudo -e /etc/rc.local
+$ cat /etc/rc.local
+echo 2 &gt; /sys/module/hid_apple/parameters/fnmode
+$ sudo chmod u+x /etc/rc.local</code></pre>
+<p>再起動<br />
+うまくいったかな</p>
+<pre class="console"><code>$ cat /sys/module/hid_apple/parameters/fnmode
+2</code></pre>
+<p>いった<br />
+Fnキー押さなくてもファンクションキーになった</p>
+<p>キー割り当ては明日やろう</p>
+<h2 id="maclinuxdevubuntuをmacbook-airに入れてみる-7">[mac][linux][dev]UbuntuをMacbook Airに入れてみる (7)</h2>
+<p>Fn押さなくてもファンクションキーとして認識されるようになったので<br />
+今度はファンクションキーにHome、End、PageUp、PageDownを割り当てたい</p>
+<p>キーのコードは<code>xev</code>というコマンドで調べられる<br />
+<code>xev</code>はキーコードを調べるコマンドというわけではなくて、<br />
+ウィンドウに発生したイベントを表示してくれるコマンド</p>
+<pre class="console"><code>$ xev &amp;
+:
+KeyPress event, serial 37, synthetic NO, window 0x3600001,
+    root 0x14c, subw 0x0, time 4989528, (428,688), root:(456,773),
+    state 0x0, keycode 75 (keysym 0xffc6, F9), same_screen YES,
+    XLookupString gives 0 bytes: 
+    XmbLookupString gives 0 bytes: 
+    XFilterEvent returns: False
+:
+KeyPress event, serial 37, synthetic NO, window 0x3600001,
+    root 0x14c, subw 0x0, time 4991711, (428,688), root:(456,773),
+    state 0x0, keycode 76 (keysym 0xffc7, F10), same_screen YES,
+    XLookupString gives 0 bytes: 
+    XmbLookupString gives 0 bytes: 
+    XFilterEvent returns: False
+:
+KeyPress event, serial 37, synthetic NO, window 0x3600001,
+    root 0x14c, subw 0x0, time 4992639, (428,688), root:(456,773),
+    state 0x0, keycode 95 (keysym 0xffc8, F11), same_screen YES,
+    XLookupString gives 0 bytes: 
+    XmbLookupString gives 0 bytes: 
+    XFilterEvent returns: False
+:
+KeyPress event, serial 37, synthetic NO, window 0x3600001,
+    root 0x14c, subw 0x0, time 4993487, (428,688), root:(456,773),
+    state 0x0, keycode 96 (keysym 0xffc9, F12), same_screen YES,
+    XLookupString gives 0 bytes: 
+    XmbLookupString gives 0 bytes: 
+    XFilterEvent returns: False
+:</code></pre>
+<p>keycodeはF9→75、F10→76、F11→95、F12→96<br />
+なんでとんでんの</p>
+<p>実際のキー割り当ての変更は<code>xmodmap</code>を使う<br />
+<code>-pke</code>オブションをつけると設定ファイルの形式でキー割り当てが表示される</p>
+<pre class="console"><code>$ xmodmap -pke
+:
+keycode  75 = F9 XF86AudioNext F9 XF86AudioNext F9 XF86Switch_VT_9 F9 XF86Switch_VT_9
+keycode  76 = F10 XF86AudioMute F10 XF86AudioMute F10 XF86Switch_VT_10 F10 XF86Switch_VT_10
+keycode  95 = F11 XF86AudioLowerVolume F11 XF86AudioLowerVolume F11 XF86Switch_VT_11 F11 XF86Switch_VT_11
+keycode  96 = F12 XF86AudioRaiseVolume F12 XF86AudioRaiseVolume F12 XF86Switch_VT_12 F12 XF86Switch_VT_12
+:
+keycode 110 = Home NoSymbol Home
+keycode 112 = Prior NoSymbol Prior
+keycode 115 = End NoSymbol End
+keycode 117 = Next NoSymbol Next</code></pre>
+<p>いくつも並んでいるのは左から</p>
+<p>何も押してないとき<br />
+Shiftを押しているとき<br />
+Mode_switchキー(alt?)が押されているとき<br />
+両方押されているとき</p>
+<p>ということらしい<br />
+そこより右は使われていないとか</p>
+<p>XF86ナントカは名前からしてマルチメディアキーらしい<br />
+Fn押せばいい気もするし最悪押せなくてもまあいいや<br />
+110番台の設定をコピろう</p>
+<p>デフォルトの設定を取っておきます</p>
+<pre class="console"><code>$ xmodmap -pke &gt; ~/.Xmodmap_default</code></pre>
+<p>`/.Xmodmapを作る</p>
+<pre class="text"><code>keycode 75 = Home NoSymbol Home
+keycode 76 = End NoSymbol End
+keycode 95 = Prior NoSymbol Prior
+keycode 96 = Next NoSymbol Next</code></pre>
+<p>反映</p>
+<pre class="console"><code>$ xmodmap ~/.Xmodmap</code></pre>
+<p>できてるかなー？<br />
+できた</p>
+<p>２項目目の<code>NoSymbol</code>ってなんだっていうのが気になったけど<br />
+Ctrl+Home(F9)でファイルの先頭、<br />
+Ctrl+End(F10)でファイルの末尾に行ったから<br />
+あんまり気にしなくていいかな</p>
+<p>このままでは再起動するとキー割り当てがもとに戻ってしまうので<br />
+どこかで<code>xmodmap ~/.Xmodmap</code>を実行するようにしてやる必要がある<br />
+やり方はいろいろあるみたいだけど安易に.bashrcに書いておいた</p>
+<pre class="sh"><code>:
+# Change key assigns
+xmodmap ~/.Xmodmap</code></pre>
+<p>再起動<br />
+OK</p>
+<h2 id="maclinuxdevubuntuをmacbook-airに入れてみる-8">[mac][linux][dev]UbuntuをMacbook Airに入れてみる (8)</h2>
+<p>xmodmap覚えたところで、ちょっと気になってた特殊キー周りも見直してみる</p>
+<ul>
+<li>「英数」と「かな」が逆にアサインされているっぽい</li>
+<li>「caps」を押すと日本語入力のトグルになる</li>
+<li>optionとcommand、PCで言うとどっちがALTでどっちがWin？</li>
+</ul>
+<p>もしかしてキーボードレイアウトの選択が間違ってるのかなとは思うものの<br />
+&quot;Apple&quot;と&quot;JIS&quot;が入ってるの選んだはずだしここから修正していく</p>
+<p>ひとつずつ行く</p>
+<ul>
+<li>「英数」と「かな」が逆にアサインされているっぽい</li>
+</ul>
+<p>今はIMEの設定も逆にしてるから困ってはいないんだけど！<br />
+でも気持ち悪いの！<br />
+MacにUbuntuを入れてる人もそれなりにいるみたいなんだけど<br />
+どうしてるんだろう<br />
+気にしてない？IMEの割当で済ませてる？</p>
+<p>逆に、これから直すとIMEの設定もやりなおさなきゃなんだけど<br />
+でもやる</p>
+<p>xmodmapの設定で言うとたぶんここ</p>
+<pre class="text"><code>keycode 130 = Eisu_toggle NoSymbol Eisu_toggle
+keycode 131 = Hiragana_Katakana NoSymbol Hiragana_Katakana</code></pre>
+<p>xevで見るとkeycode 130が「かな」、keycode 131が「英数」</p>
+<p>これは単純に入れ替えれば済むのではないか<br />
+~/.Xmodmapに以下を追記して<code>xmodmap ~/.Xmodmap</code></p>
+<pre class="text"><code>keycode 130 = Hiragana_Katakana NoSymbol Hiragana_Katakana
+keycode 131 = Eisu_toggle NoSymbol Eisu_toggle</code></pre>
+<p>できた<br />
+逆になってる<br />
+日本語入力しにくい<br />
+さっそくIMEの設定を変更</p>
+<p>設定は新しいアプリから反映されます、って言われるんだよね<br />
+アプリを再起動ってことだと思うんだけどそれじゃ反映されない<br />
+OSから再起動する</p>
+<p>日本語入力はOK<br />
+キーボードレイアウトは・・・逆！？直ってないよ？<br />
+左側にHiragana、右側にEisuになって逆のまま・・・</p>
+<p>こっちはxmodmapじゃなくてキーボードレイアウトの方で表示されてるわけか<br />
+スペースの左が130で右が131ですよって覚えてるわけだな？<br />
+ここは直せるのか<br />
+検索しても<code>dpkg-reconfigure keyboard-configuration</code>で選択肢から<br />
+選ぶやりかたばっかり引っかかる<br />
+ドライバ書くとかそんなレベルなんだろうか<br />
+ここはもうあきらめておこう</p>
+<p>xmodmapっていう名前からしてX Windowのレイヤーで<br />
+キー割り当て変更してるっぽいけどこれはもっと下でやったほうが<br />
+いいのではないのか<br />
+X Windowの外側では無効なんだよね？<br />
+などと言ってもはじまらず</p>
+<p>そういえば<br />
+IMEの設定では&quot;Eisu_toggle&quot;や&quot;Hiragana_Katakana&quot;ではなくて<br />
+&quot;Eisu&quot;や&quot;Hiragana&quot;と表示されてる<br />
+なにかもやっとしたものを感じてたんだけどこれだな<br />
+この文字列はどこから持ってきているんだろう</p>
+<ul>
+<li>「caps」を押すと日本語入力のトグルになる</li>
+</ul>
+<p>ときどき、Ctrlを押すつもりでcapsを押してしまうと、大文字に<br />
+なるだけではなくて日本語入力になってしまってなにこれってなる</p>
+<p>「キーボードレイアウトの表示」で見てみると<br />
+ひとつのキーに「Capslock Eisu_toggle」って表示されてる<br />
+なんでこうなった</p>
+<p>xmodmapで関係ありそうなのはここ</p>
+<pre class="console"><code>keycode  66 = Eisu_toggle Caps_Lock Eisu_toggle Caps_Lock</code></pre>
+<p>そのまま押せばEisu_toggle、Shiftと押せばCaps Lockという設定<br />
+でもそのまま押してもCaps Lockとして動作する<br />
+Caps Lockはハードウェア的に動作してて＋ソフトでEisu_toggleが<br />
+かかってるってことだろうか</p>
+<p>あ、キーボードレイアウトで上に表示されてるのはShift押したときの<br />
+キーコードってことか納得<br />
+納得はしたけど解決はしていない</p>
+<p>あとUbuntuインストールしたときに、たしか言語の切り替えかなんかで<br />
+Capsキーを使うってのを選んだんだよな<br />
+あれが影響してるのかもしれない<br />
+でも、何をやったら再設定できるのか<br />
+「設定」見てもそれっぽいのはない</p>
+<p><code>dpkg-reconfigure keyboard-configuration</code>に何かあったかな<br />
+もっかいやってみよ</p>
+<p>あーそういえばここで、「日本語」を選ぶか「日本語（Macintosh）」を<br />
+選ぶかで悩んで「日本語（Macintosh）」にしたけど、カナ入力に<br />
+なっちゃって結局消したんだよな<br />
+なんか関係あるかな<br />
+使うのはMozcだから基本的には関係ないと思うんだけど<br />
+いやむしろ、ずっと「日本語（Mozc）」なんだから<br />
+「日本語」もいらないのか？消してみる？</p>
+<p>AltGrで「キーボード配置のデフォルト」っていうのも意味がよくわからない<br />
+結局どのキーになってるの？<br />
+ていうかいらないか・・・<br />
+AltGrなしにしちゃう？した<br />
+でもそれっぽいものはなかった</p>
+<p>再起動<br />
+お？<br />
+なんか直ってるっぽい？<br />
+キーボードレイアウトはどうかな？</p>
+<p>Caps LockがAの隣に来て、Controlが左下に来てる<br />
+Caps LockがEisu_toggleとセットじゃなくなってるから<br />
+日本語に切り替わらなくなったのかな<br />
+・・・というのはいいとして<br />
+これ英語キーボードのレイアウトじゃないか<br />
+だめだこりゃ</p>
+<p>「日本語」を入れ直す<br />
+キーボードレイアウトは変わったけど「英数」「かな」は出てこない<br />
+再起動したら出てきた<br />
+もうよくわからなくなっている</p>
+<p>あれ？<br />
+でもcaps押しても日本語入力に切り替わらなくなってる<br />
+なに？なになに？<br />
+AltGrの設定が関係ある？<br />
+いやそれはないと思うんだけどなあ<br />
+キーボードレイアウトを表示させるとCaps LockとEisu_toggleが<br />
+同居してた</p>
+<p>切り分け失敗してるな・・・</p>
+<p>いやちょっとまて<br />
+Caps LockとEisu_toggleが同居してる、んだよな？<br />
+Eisu_toggleはさっきIMEオフに設定したよな？<br />
+つまりcapsを押すとIMEオフになるのか</p>
+<p>どれ<br />
+あーなるなる<br />
+何も解決してなかった（涙</p>
+<p>じゃ、もともとの構想どおりxmodmapの設定を変更してみるね！</p>
+<pre class="text"><code>keycode 66 = Caps_Lock Caps_Lock Caps_Lock Caps_Lock</code></pre>
+<p>今度こそ直ったみたい<br />
+どんだけ横道だったのかというね<br />
+キーボードレイアウトの表示ではEisu_toggleが消えて<br />
+Caps Lock単独になった<br />
+なぜか上段にいるけど</p>
+<p>まあいいや</p>
+<ul>
+<li>optionとcommand、PCで言うとどっちがALTでどっちがWin？</li>
+</ul>
+<p>xevによるとcommandキーにSuper、optionキーにAltが割り当てられている模様<br />
+なおShift+optionでMetaになるようだ</p>
+<p>横道だけど、アプリ側でoption+shiftを判定したりするようになっていると<br />
+こういうのって想定外の動作にならないんだろうか<br />
+アプリ側は「お、Metaのコードが来た ってことはshiftとoptionが<br />
+押されたんだな」とか考えないような気がするんだけど<br />
+どうももやっとするなあ</p>
+<p>話を戻して<br />
+コレ単体で見れば別に問題はないと思うけど<br />
+WindowsではWinキーが左、Altキーが右<br />
+Macだと、option(altとも書いてある)が左、commandが右</p>
+<p>Windowsでは当然、AltキーでAltが送られてくるだろう<br />
+ということは左右が逆になるのではないか<br />
+Win機にUbuntuを入れたとき、キーが逆になってて困ったりしないか<br />
+WindowsとMacを使うときも、なんとなくMacのcommandはWindowsの<br />
+Altに近いようなイメージあったし（かなり違うけど</p>
+<p>UbuntuはどっちかというとPC上で動くことを想定されてるだろうから、<br />
+Windowsの操作に合ってたほうがよさそうな気がする<br />
+あと右commandがどっちとして働くべきか<br />
+自分はあんまり右command使わないから、ほかの便利そうなキーに<br />
+してしまってもいいんだけど</p>
+<p>どうしようかな<br />
+「設定」「デバイス」「キーボード」でショートカットキーを<br />
+見ながら考える<br />
+やっぱりSuperがWindowsキーだな ということは左<br />
+ここは刻印でなく左右を優先しよう</p>
+<p>で、何を変更すればいいの<br />
+xevだと、左commandはxevが受け取るより先にGNOMEがインターセプトして<br />
+しまってわからないんだけどたぶんこれ<br />
+（右commandもAltにするつもりで）</p>
+<pre class="text"><code>keycode  64 = Alt_L Meta_L Alt_L Meta_L
+keycode 133 = Super_L NoSymbol Super_L
+keycode 134 = Super_R NoSymbol Super_R</code></pre>
+<p>こうかな</p>
+<pre class="text"><code>keycode  64 = Super_L NoSymbol Super_L
+keycode 133 = Alt_L Meta_L Alt_L Meta_L
+keycode 134 = Alt_R NoSymbol Alt_R</code></pre>
+<p>あれー<br />
+command+tabでアプリ切り替えができなくなった<br />
+さっきまでcommand+tabでもoption+tabでもできてたのになあ<br />
+commandに(Windowsで言うところの)Altを割り当てるなら<br />
+Alt+tabでできてほしいところなんだけど！</p>
+<p>探してみたら同志も多いようで<br />
+xmodmapでやるやり方もあったけど<br />
+<code>/sys/module/hid_apple/parameters/swap_opt_cmd</code>に<br />
+1を書き込んでやればいい、というのも見つかった<br />
+もとから用意されてるならこれでいいか<br />
+xmodmapの方は思ってたよりすこしだけややこしくて<br />
+もうちょっと理解してからじゃないとやりたくない感じだった</p>
+<p>.Xmodmapをもとに戻してから<code>/etc/rc.local</code>に以下を追記</p>
+<pre class="sh"><code>echo 1 &gt; /sys/module/hid_apple/parameters/swap_opt_cmd</code></pre>
+<p>で再起動<br />
+できた</p>
+<h2 id="maclinuxdevubuntuをmacbook-airに入れてみる-9">[mac][linux][dev]UbuntuをMacbook Airに入れてみる (9)</h2>
+<p>この辺から、UbuntuというよりLinuxの解説になってくる</p>
+<p>シェルの展開とか<br />
+そういうのあったなーと思うんだけどしょっちゅう使わないと忘れる</p>
+<ol style="list-style-type: decimal">
+<li>ブレース展開</li>
+</ol>
+<h2 id="maclinuxdevubuntuをmacbook-airに入れてみる">[mac][linux][dev]UbuntuをMacbook Airに入れてみる ()</h2>
+<p>あと、調べてる間にxmodmapを実行するスクリプトとして<br />
+.xinitrc、.xinputrc、.gnomercなどが出てきた<br />
+inputっちゃあinputなので.xinitrcに入れてみる<br />
+(これだけもともとあったし)</p>
